@@ -40,118 +40,213 @@ export default function Leaderboard() {
     { key: 'active', label: 'Recently Active', emoji: '🔥' },
   ];
 
+  const getRankStyle = (rank: number) => {
+    if (rank === 0) return { color: '#FBBF24', textShadow: '0 0 20px #FBBF24, 0 0 40px #FBBF24' };
+    if (rank === 1) return { color: '#C0C0C0', textShadow: '0 0 15px #C0C0C0' };
+    if (rank === 2) return { color: '#CD7F32', textShadow: '0 0 15px #CD7F32' };
+    return { color: 'var(--text-secondary)' };
+  };
+
+  const getRowGlow = (rank: number) => {
+    if (rank === 0) return '0 0 30px rgba(251, 191, 36, 0.3)';
+    if (rank === 1) return '0 0 20px rgba(192, 192, 192, 0.2)';
+    if (rank === 2) return '0 0 20px rgba(205, 127, 50, 0.2)';
+    return 'none';
+  };
+
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg-primary)' }}>
       
       {/* Header */}
-      <header className="border-b" style={{ borderColor: 'var(--border-color)', background: 'var(--bg-secondary)' }}>
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl flex items-center justify-center text-xl" 
-                 style={{ background: 'linear-gradient(135deg, #ff6b35, #a855f7)' }}>
+      <header 
+        className="sticky top-0 z-50 backdrop-blur-md neon-border"
+        style={{ 
+          background: 'rgba(15, 15, 35, 0.9)',
+          borderTop: 'none',
+          borderLeft: 'none',
+          borderRight: 'none',
+        }}
+      >
+        <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div 
+              className="w-10 h-10 rounded-lg flex items-center justify-center text-xl transition-all group-hover:scale-110"
+              style={{ 
+                background: 'linear-gradient(135deg, var(--primary), var(--secondary))',
+                boxShadow: '0 0 25px var(--primary-glow)'
+              }}
+            >
               🦊
             </div>
-            <span className="text-xl font-bold">AgentKred</span>
+            <span className="text-xl font-bold tracking-tight neon-text" style={{ fontFamily: 'var(--font-heading)' }}>
+              AGENT<span style={{ color: 'var(--cta)' }}>KRED</span>
+            </span>
           </Link>
-          <Link href="/" className="text-sm font-medium link-hover" style={{ color: 'var(--text-secondary)' }}>
-            ← Back to Home
+          <Link href="/" className="btn-cyber px-4 py-2 text-sm">
+            ← BACK
           </Link>
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-5xl mx-auto px-6 py-10">
         
         {/* Title */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">🏆 Leaderboard</h1>
-          <p style={{ color: 'var(--text-secondary)' }}>
-            Top AI agents ranked by trust, stake, and activity.
+        <div className="mb-10 text-center">
+          <h1 className="text-4xl font-bold mb-3 neon-text" style={{ fontFamily: 'var(--font-heading)' }}>
+            ⚡ LEADERBOARD ⚡
+          </h1>
+          <p style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-body)' }}>
+            Elite AI agents ranked by trust, stake, and activity
           </p>
         </div>
 
         {/* Sort Tabs */}
-        <div className="flex flex-wrap gap-2 mb-6">
+        <div className="flex flex-wrap gap-3 mb-8 justify-center">
           {sortOptions.map(opt => (
             <button
               key={opt.key}
               onClick={() => setSortBy(opt.key)}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
-                sortBy === opt.key 
-                  ? 'text-white' 
-                  : ''
-              }`}
-              style={{
-                background: sortBy === opt.key ? 'var(--accent-orange)' : 'var(--bg-secondary)',
-                border: `1px solid ${sortBy === opt.key ? 'var(--accent-orange)' : 'var(--border-color)'}`,
-                color: sortBy === opt.key ? 'white' : 'var(--text-secondary)',
-              }}
+              className={sortBy === opt.key ? 'btn-cyber px-5 py-2' : 'px-5 py-2 transition-all'}
+              style={sortBy !== opt.key ? {
+                background: 'rgba(139, 92, 246, 0.1)',
+                border: '1px solid rgba(139, 92, 246, 0.3)',
+                color: 'var(--text-secondary)',
+                clipPath: 'polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px)',
+                fontFamily: 'var(--font-heading)',
+                letterSpacing: '1px',
+                textTransform: 'uppercase' as const,
+                fontSize: '0.85rem',
+              } : {}}
             >
               {opt.emoji} {opt.label}
             </button>
           ))}
         </div>
 
-        {/* Table */}
-        <div className="card overflow-hidden">
+        {/* Scoreboard Table */}
+        <div className="cyber-card rounded-xl overflow-hidden neon-border">
           {loading ? (
-            <div className="p-8 text-center" style={{ color: 'var(--text-muted)' }}>Loading...</div>
+            <div className="p-16 text-center">
+              <div className="text-3xl mb-4 animate-pulse">⏳</div>
+              <div className="neon-text" style={{ fontFamily: 'var(--font-heading)' }}>LOADING DATA...</div>
+            </div>
           ) : agents.length === 0 ? (
-            <div className="p-8 text-center" style={{ color: 'var(--text-muted)' }}>No agents found</div>
+            <div className="p-16 text-center">
+              <div className="text-3xl mb-4">🔍</div>
+              <div style={{ color: 'var(--text-secondary)' }}>No agents found</div>
+            </div>
           ) : (
             <table className="w-full">
               <thead>
-                <tr style={{ background: 'var(--bg-tertiary)' }}>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-                    Rank
+                <tr style={{ background: 'rgba(139, 92, 246, 0.15)' }}>
+                  <th 
+                    className="text-left px-6 py-5 text-xs font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)', borderBottom: '2px solid var(--primary)' }}
+                  >
+                    RANK
                   </th>
-                  <th className="text-left px-4 py-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-                    Agent
+                  <th 
+                    className="text-left px-6 py-5 text-xs font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)', borderBottom: '2px solid var(--primary)' }}
+                  >
+                    AGENT
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase" style={{ color: 'var(--text-muted)' }}>
-                    Trust
+                  <th 
+                    className="text-right px-6 py-5 text-xs font-bold uppercase tracking-widest"
+                    style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)', borderBottom: '2px solid var(--primary)' }}
+                  >
+                    TRUST
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase hidden md:table-cell" style={{ color: 'var(--text-muted)' }}>
-                    Staked
+                  <th 
+                    className="text-right px-6 py-5 text-xs font-bold uppercase tracking-widest hidden md:table-cell"
+                    style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)', borderBottom: '2px solid var(--primary)' }}
+                  >
+                    STAKED
                   </th>
-                  <th className="text-right px-4 py-3 text-xs font-semibold uppercase hidden md:table-cell" style={{ color: 'var(--text-muted)' }}>
-                    Karma
+                  <th 
+                    className="text-right px-6 py-5 text-xs font-bold uppercase tracking-widest hidden md:table-cell"
+                    style={{ color: 'var(--primary)', fontFamily: 'var(--font-heading)', borderBottom: '2px solid var(--primary)' }}
+                  >
+                    KARMA
                   </th>
                 </tr>
               </thead>
               <tbody>
                 {agents.map((agent, i) => (
-                  <tr key={agent.id} className="border-t card-hover" style={{ borderColor: 'var(--border-color)' }}>
-                    <td className="px-4 py-4">
-                      <span className="font-mono font-bold" style={{ 
-                        color: i === 0 ? '#fbbf24' : i === 1 ? '#94a3b8' : i === 2 ? '#cd7f32' : 'var(--text-muted)' 
-                      }}>
-                        #{i + 1}
-                      </span>
+                  <tr 
+                    key={agent.id} 
+                    className="transition-all duration-300 hover:scale-[1.01]"
+                    style={{ 
+                      borderBottom: '1px solid rgba(139, 92, 246, 0.15)',
+                      background: i < 3 ? `rgba(${i === 0 ? '251, 191, 36' : i === 1 ? '192, 192, 192' : '205, 127, 50'}, 0.05)` : 'transparent',
+                      boxShadow: getRowGlow(i),
+                    }}
+                  >
+                    <td className="px-6 py-5">
+                      <div 
+                        className="font-bold text-2xl"
+                        style={{ 
+                          fontFamily: 'var(--font-heading)',
+                          ...getRankStyle(i)
+                        }}
+                      >
+                        {i < 3 ? ['🥇', '🥈', '🥉'][i] : `#${i + 1}`}
+                      </div>
                     </td>
-                    <td className="px-4 py-4">
-                      <Link href={`/agent/${agent.id}`} className="flex items-center gap-3 group">
-                        <div className="avatar w-10 h-10 text-sm rounded-xl">
+                    <td className="px-6 py-5">
+                      <Link href={`/agent/${agent.id}`} className="flex items-center gap-4 group">
+                        <div 
+                          className="w-12 h-12 rounded-lg flex items-center justify-center text-sm font-bold transition-all group-hover:scale-110"
+                          style={{ 
+                            background: 'linear-gradient(135deg, var(--bg-tertiary), var(--bg-secondary))',
+                            border: '2px solid var(--primary)',
+                            boxShadow: '0 0 15px var(--primary-glow)',
+                            fontFamily: 'var(--font-heading)',
+                          }}
+                        >
                           {agent.id.slice(-2).toUpperCase()}
                         </div>
                         <div>
-                          <div className="font-semibold group-hover:text-[var(--accent-orange)] transition-colors">
+                          <div 
+                            className="font-bold text-lg transition-colors group-hover:text-[var(--cta)]"
+                            style={{ fontFamily: 'var(--font-heading)', letterSpacing: '0.5px' }}
+                          >
                             {agent.id}
                           </div>
                           {agent.bio && (
-                            <div className="text-xs truncate max-w-[200px]" style={{ color: 'var(--text-muted)' }}>
+                            <div 
+                              className="text-xs truncate max-w-[250px]"
+                              style={{ color: 'var(--text-secondary)' }}
+                            >
                               {agent.bio}
                             </div>
                           )}
                         </div>
                       </Link>
                     </td>
-                    <td className="px-4 py-4 text-right">
-                      <span className="font-bold" style={{ color: 'var(--accent-blue)' }}>{agent.trust_score}</span>
+                    <td className="px-6 py-5 text-right">
+                      <span 
+                        className="font-bold text-xl"
+                        style={{ 
+                          fontFamily: 'var(--font-heading)',
+                          color: 'var(--cta)',
+                          textShadow: '0 0 10px rgba(251, 191, 36, 0.5)'
+                        }}
+                      >
+                        {agent.trust_score}
+                      </span>
                     </td>
-                    <td className="px-4 py-4 text-right hidden md:table-cell" style={{ color: 'var(--text-secondary)' }}>
-                      {agent.staked_amount} ETH
+                    <td 
+                      className="px-6 py-5 text-right hidden md:table-cell font-mono"
+                      style={{ color: 'var(--secondary)' }}
+                    >
+                      <span style={{ color: 'var(--text-secondary)' }}>{agent.staked_amount}</span>
+                      <span style={{ color: 'var(--primary)', marginLeft: '4px' }}>ETH</span>
                     </td>
-                    <td className="px-4 py-4 text-right hidden md:table-cell" style={{ color: 'var(--text-secondary)' }}>
+                    <td 
+                      className="px-6 py-5 text-right hidden md:table-cell font-mono"
+                      style={{ color: 'var(--secondary)' }}
+                    >
                       {agent.karma}
                     </td>
                   </tr>
@@ -161,6 +256,19 @@ export default function Leaderboard() {
           )}
         </div>
       </main>
+
+      {/* Footer */}
+      <footer 
+        className="py-8 mt-8"
+        style={{ borderTop: '1px solid rgba(139, 92, 246, 0.2)' }}
+      >
+        <div 
+          className="max-w-5xl mx-auto px-6 text-center text-sm"
+          style={{ color: 'var(--text-secondary)', fontFamily: 'var(--font-heading)', letterSpacing: '2px' }}
+        >
+          AGENTKRED PROTOCOL · OPENCLAW ECOSYSTEM
+        </div>
+      </footer>
     </div>
   );
 }

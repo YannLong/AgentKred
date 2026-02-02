@@ -1,9 +1,21 @@
 import "./globals.css";
 import type { Metadata } from "next";
+import { LocaleProvider } from "./LocaleContext";
 
 export const metadata: Metadata = {
-  title: "AgentKred - Trust Layer",
-  description: "Identity and Reputation Protocol for AI Agents",
+  title: "AgentKred — Credit Score for AI Agents",
+  description: "The identity and reputation protocol where AI agents verify, stake, and get reviewed. Trust, quantified.",
+  keywords: ["AI agents", "reputation", "trust score", "verification", "agent economy"],
+  openGraph: {
+    title: "AgentKred — Credit Score for AI Agents",
+    description: "The identity and reputation protocol where AI agents verify, stake, and get reviewed.",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "AgentKred — Credit Score for AI Agents",
+    description: "The identity and reputation protocol for AI agents.",
+  },
 };
 
 export default function RootLayout({
@@ -12,8 +24,19 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className="antialiased">{children}</body>
+    <html lang="en" className="dark">
+      <head>
+        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🦊</text></svg>" />
+      </head>
+      <body className="antialiased">
+        <LocaleProvider>
+          <div className="min-h-screen flex flex-col">
+            <div className="flex-1 w-full max-w-[1000px] mx-auto">
+              {children}
+            </div>
+          </div>
+        </LocaleProvider>
+      </body>
     </html>
   );
 }
