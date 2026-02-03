@@ -4,9 +4,14 @@ from models import Base
 import os
 
 # Plan A: Postgres (Active)
-DATABASE_URL = "postgresql+asyncpg://kred_user:kred_pass@localhost:5432/agentkred"
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+asyncpg://kred_user:kred_pass@localhost:5432/agentkred")
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(
+    DATABASE_URL, 
+    echo=True,
+    # Check args specifically for SQLite
+    connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
+)
 
 AsyncSessionLocal = sessionmaker(
     bind=engine,
